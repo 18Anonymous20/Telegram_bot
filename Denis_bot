@@ -1,0 +1,34 @@
+import logging
+from aiogram import Bot, Dispatcher
+from aiogram import types
+from aiogram import executor
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
+from aiogram.dispatcher.filters import Text
+from aiogram.dispatcher import FSMContext
+
+TOKEN = '5749100788:AAEU8VkUGKUhh97hPjGTH76ijOUSif6PzpA'
+
+bot = Bot(token=TOKEN, parse_mode=types.ParseMode.HTML)
+memory_storage = MemoryStorage()
+dp = Dispatcher(bot, storage=memory_storage)
+logging.basicConfig(level=logging.DEBUG)
+
+
+# Функция ниже читает все, что пишут в группе (если бота сделать админом)
+# или только то, что пишут боту и ждет, когда кто-то напишет sergey
+@dp.message_handler(Text(equals="Denis", ignore_case=True), state="*")
+async def cmd_start(message: types.Message, state: FSMContext):
+    media = types.InputFile('AOzxTPn3z8Q.jpg')  # этот файл должен лежать в корне проекта
+    info = '''
+    <i>Информация о субъекте:</i>
+
+    <code>Класс:  </code>👽 Гуманоид
+    <code>Вид:    </code>🧟 Homo Sapiens
+    <code>Рожден: </code>🌏 Планета Земля
+    '''
+
+    await message.answer_photo(media)  # отвечаем на сообщение картинкой
+    await message.answer(info)  # отвечаем на сообщение текстом
+
+
+executor.start_polling(dp, skip_updates=True)
